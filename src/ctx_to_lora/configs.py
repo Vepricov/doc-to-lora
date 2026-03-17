@@ -500,6 +500,17 @@ class HypernetArguments:
     num_pre_head_layers: int = field(
         default=1, metadata={"help": "# of layers before hypernet head"}
     )
+    avg_chunk_loras: bool = field(
+        default=False,
+        metadata={
+            "help": (
+                "How to combine per-chunk LoRAs when a context is split into multiple "
+                "chunks. False (default): stack — concatenate ranks, effective rank grows "
+                "with the number of chunks. True: average — element-wise mean across "
+                "chunks, rank stays at base_rank."
+            )
+        },
+    )
 
 
 @dataclass

@@ -70,6 +70,7 @@ class HypernetConfig:
     use_token_mixing: bool
     num_pre_head_layers: int
     dropout_rate: float
+    avg_chunk_loras: bool
 
     lora_config: LoraConfig
     extra_modules: list[str] | None
@@ -734,6 +735,7 @@ class ModulatedPretrainedModel(nn.Module):
                 lora_bias=self.hypernet.get_head_bias()
                 if self.hypernet.config.use_bias
                 else None,
+                avg_loras=self.hypernet.config.avg_chunk_loras,
             )
 
             # input_ids in model_inputs_kwargs contains only
@@ -876,6 +878,7 @@ class ModulatedPretrainedModel(nn.Module):
                 else None,
                 scalers=scalers,
                 bias_scaler=bias_scaler,
+                avg_loras=self.hypernet.config.avg_chunk_loras,
             )
 
             # apply lora hook to the base model

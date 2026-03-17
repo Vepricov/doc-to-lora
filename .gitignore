@@ -32,3 +32,4 @@ eval_results/
 *.code-workspace
 .wandb/
 .ruff_cache/
+*.sh

@@ -1,5 +1,5 @@
 #!/bin/bash
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=1
 uv run train.py \
  configs/niah_exp/ctx_magic_number_32_256.yaml \
  --model_name_or_path=google/gemma-2-2b-it \
@@ -9,7 +9,8 @@ uv run train.py \
  --per_device_eval_batch_size=16 \
  --exp_setup=hyper_lora \
  --aggregator_type=perceiver \
- --target_modules=v_proj,down_proj \
+ --target_modules=down_proj \
+ --avg_chunk_loras=True \
  --num_blocks=8 \
  --num_self_attn_per_block=0 \
  --num_pre_head_layers=1 \
@@ -41,3 +42,5 @@ uv run train.py \
  --torch_empty_cache_steps=10 \
  --num_chunk_probs='{"1":"0.5", "2":"0.125", "3":"0.0625", "4":"0.0625", "5":"0.0625", "6":"0.0625", "7":"0.0625", "8":"0.0625"}' \
  "$@"
+
+# target_modules=q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj
