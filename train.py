@@ -63,6 +63,19 @@ logger = logging.getLogger()
 LOCAL_RANK = int(os.getenv("LOCAL_RANK", "0"))
 
 
+def log_model_structure(model):
+    logger.info("Model architecture:\n%s", model)
+    # logger.info("Model parameter shapes:")
+    # for name, param in model.named_parameters():
+    #     logger.info(
+    #         "%s: shape=%s dtype=%s requires_grad=%s",
+    #         name,
+    #         tuple(param.shape),
+    #         param.dtype,
+    #         param.requires_grad,
+    #     )
+
+
 def main():
     ############ Argument parsing
     parser = ArgumentParser(
@@ -253,6 +266,8 @@ def main():
 
     model.train()
     logger.debug(model)
+    if LOCAL_RANK == 0:
+        log_model_structure(model)
     log_num_train_params(model)
 
     ############ Dataset setup

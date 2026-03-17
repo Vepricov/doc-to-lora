@@ -1,5 +1,6 @@
 #!/bin/bash
-WANDB_MODE=disabled uv run train.py \
+export CUDA_VISIBLE_DEVICES=0
+uv run train.py \
  configs/niah_exp/ctx_magic_number_32_256.yaml \
  --model_name_or_path=google/gemma-2-2b-it \
  --num_train_epochs=1 \
@@ -8,7 +9,7 @@ WANDB_MODE=disabled uv run train.py \
  --per_device_eval_batch_size=16 \
  --exp_setup=hyper_lora \
  --aggregator_type=perceiver \
- --target_modules=down_proj \
+ --target_modules=v_proj,down_proj \
  --num_blocks=8 \
  --num_self_attn_per_block=0 \
  --num_pre_head_layers=1 \
@@ -34,9 +35,9 @@ WANDB_MODE=disabled uv run train.py \
  --eval_on_start=True \
  --max_ctx_chunk_len=512 \
  --min_ctx_chunk_len=25 \
- --num_chunk_probs='{"1":"0.5", "2":"0.125", "3":"0.0625", "4":"0.0625", "5":"0.0625", "6":"0.0625", "7":"0.0625", "8":"0.0625"}' \
  --max_val_samples_per_ds=100 \
  --seed=1 \
  --use_per_ctx_average_loss=True \
  --torch_empty_cache_steps=10 \
+ --num_chunk_probs='{"1":"0.5", "2":"0.125", "3":"0.0625", "4":"0.0625", "5":"0.0625", "6":"0.0625", "7":"0.0625", "8":"0.0625"}' \
  "$@"
