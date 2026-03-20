@@ -494,6 +494,8 @@ class ModulatedPretrainedModel(nn.Module):
             hypernet_config.use_per_rank_bias = False
         if getattr(hypernet_config, "use_bias", None) is None:
             hypernet_config.use_bias = True
+        if getattr(hypernet_config, "avg_chunk_loras", None) is None:
+            hypernet_config.avg_chunk_loras = False
         ctx_encoder_args = state_dict["ctx_encoder_args"]
         model = cls(base_model, hypernet_config, ctx_encoder_args, **kwargs)
         model.load_state_dict(state_dict)
