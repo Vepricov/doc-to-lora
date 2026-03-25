@@ -455,6 +455,10 @@ class DataArguments:
         default=500,
         metadata={"help": "Maximum number of test samples per dataset."},
     )
+    test_samples_sequential: bool = field(
+        default=False,
+        metadata={"help": "Take first N test samples instead of random."},
+    )
 
 
 @dataclass

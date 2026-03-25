@@ -895,10 +895,15 @@ def evaluate(
                 )
 
     max_test_samples_per_ds = getattr(args, "max_test_samples_per_ds", 0)
+    sequential = getattr(args, "test_samples_sequential", False)
     if split == "test" and max_test_samples_per_ds > 0:
-        print(f"Truncating all test ds to {max_test_samples_per_ds} samples")
+        mode = "first" if sequential else "random"
+        print(f"Truncating all test ds to {max_test_samples_per_ds} samples ({mode})")
         for ds_name, ds in datasets.items():
-            test_indices = np.random.permutation(len(ds))[:max_test_samples_per_ds]
+            if sequential:
+                test_indices = list(range(min(max_test_samples_per_ds, len(ds))))
+            else:
+                test_indices = np.random.permutation(len(ds))[:max_test_samples_per_ds]
             datasets[ds_name] = ds.select(test_indices)
             if ds_name in answers:
                 answers[ds_name] = answers[ds_name].select(test_indices)

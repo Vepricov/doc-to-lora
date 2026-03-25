@@ -167,6 +167,42 @@ for ds_name in LONGBENCH_TASKS + LONGBENCH_E_TASKS:
     )
 
 
+# IH-Challenge eval datasets
+DS_KWARGS["ih_challenge_baseline"] = dict(
+    test=dict(
+        path="json",
+        data_files="data/raw_datasets/ih_challenge/baseline.jsonl",
+        split="train",
+    ),
+)
+DS_KWARGS["ih_challenge_attack_static"] = dict(
+    test=dict(
+        path="json",
+        data_files="data/raw_datasets/ih_challenge/attacks_static.jsonl",
+        split="train",
+    ),
+)
+
+# QA eval datasets (context + query → answer)
+_QA_EVAL_DATASETS = {
+    "2wikimultihop": "2wikimultihop/test_d2l.jsonl",
+    "2wikimultihop_filtered": "2wikimultihop/test_filtered_d2l.jsonl",
+    "hotpotqa": "hotpotqa/test_d2l.jsonl",
+    "hotpotqa_filtered": "hotpotqa/test_filtered_d2l.jsonl",
+    "triviaqa": "triviaqa/test_d2l.jsonl",
+    "longbench_multi": "longbench/test_d2l.jsonl",
+    "longbench_multi_500": "longbench/test_stratified_500_d2l.jsonl",
+    "longbench_multi_1500": "longbench/test_stratified_1500_d2l.jsonl",
+}
+for _ds_name, _ds_file in _QA_EVAL_DATASETS.items():
+    DS_KWARGS[_ds_name] = dict(
+        test=dict(
+            path="json",
+            data_files=f"{RAW_DATA_DIR}/{_ds_file}",
+            split="train",
+        ),
+    )
+
 CLOSED_QA_DATASETS = {
     "longbench/qasper",
     "longbench/multifieldqa_en",
@@ -178,6 +214,7 @@ CLOSED_QA_DATASETS = {
     "squad_assistant_ctx_no_passage",
     "ropes",
     "drop",
+    *_QA_EVAL_DATASETS.keys(),
 }
 
 MULTI_ANSWER_DATASETS = {
@@ -191,6 +228,7 @@ MULTI_ANSWER_DATASETS = {
     "squad_negative_no_passage",
     "squad_assistant_ctx_no_passage",
     "drop",
+    *_QA_EVAL_DATASETS.keys(),
 }
 
 
@@ -248,3 +286,11 @@ EVAL_INTX_TEMPLATES = {
 }
 for ds_name in LONGBENCH_E_TASKS:
     EVAL_INTX_TEMPLATES[ds_name] = EVAL_INTX_TEMPLATES[ds_name[:-2]]
+
+_QA_EVAL_TEMPLATE = "Answer the following question. Output only the answer and do not output any other words.\n\nQuestion: {input}"
+for _ds_name in _QA_EVAL_DATASETS:
+    EVAL_INTX_TEMPLATES[_ds_name] = _QA_EVAL_TEMPLATE
+
+# IH-Challenge: pass prompt through as-is (no QA template wrapping)
+EVAL_INTX_TEMPLATES["ih_challenge_baseline"] = "{input}"
+EVAL_INTX_TEMPLATES["ih_challenge_attack_static"] = "{input}"

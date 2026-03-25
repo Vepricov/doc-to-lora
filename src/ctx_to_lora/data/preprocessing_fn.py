@@ -3,7 +3,7 @@ import random
 from collections.abc import Callable
 from typing import Any
 
-from ctx_to_lora.data.definitions import CLOSED_QA_INTX_TEMPLATES, EVAL_INTX_TEMPLATES
+from ctx_to_lora.data.definitions import CLOSED_QA_INTX_TEMPLATES, EVAL_INTX_TEMPLATES, _QA_EVAL_DATASETS
 from ctx_to_lora.utils import concat_list
 
 logger = logging.getLogger()
@@ -64,6 +64,15 @@ def get_preprocessing_fn(
                 "context": sample["context"],
                 "prompts": questions[:min_len],
                 "responses": responses[:min_len],
+            }
+
+    elif ds_name in _QA_EVAL_DATASETS:
+
+        def f(sample):
+            return {
+                "context": sample["context"],
+                "prompt": sample["query"],
+                "response": sample["target_answer"],
             }
 
     elif ds_name.startswith("longbench"):
@@ -157,6 +166,15 @@ def get_preprocessing_fn(
             q = sample["question"]
             q = closed_qa_prompting(q) if not is_eval else q
             return {"context": ctx, "prompt": q, "response": response}
+
+    elif ds_name.startswith("ih_challenge"):
+
+        def f(sample):
+            return {
+                "context": sample["context"],
+                "prompt": sample["prompt"],
+                "response": sample.get("response", ""),
+            }
 
     if is_eval and (ds_name in EVAL_INTX_TEMPLATES):
         prompt_template = EVAL_INTX_TEMPLATES[ds_name]
